@@ -1,6 +1,7 @@
 package com.hit.dm;
 
 public class DataModel<T> implements java.io.Serializable {
+	private static final long serialVersionUID = 1L;
 	private Long dataModelId;
 	private T content;
 
@@ -20,14 +21,23 @@ public class DataModel<T> implements java.io.Serializable {
 		this.content = content;
 	}
 
-	DataModel(Long id, T content) {
+	public DataModel(Long id, T content) {
 		dataModelId = id;
 		this.content = content;
 	}
-
-	public int hashCode();
-
-	public boolean equals(Object obj);
-
-	public String toString();
+	@Override
+	public int hashCode()
+	{
+		return super.hashCode();
+	}
+	@Override
+	public boolean equals(Object obj)
+	{
+		return super.equals(obj);
+	}
+	@Override
+	public String toString()
+	{
+		return super.toString();
+	}
 }
