@@ -11,7 +11,7 @@ public class LRUAlgoCacheImpl<K, V> extends AbstractAlgoCache<K, V> {
 	PriorityQueue<K> ramMemory;
 	HashMap<K, V> diskMemory = new HashMap<K, V>();
 
-	LRUAlgoCacheImpl(int capacity) {
+	public LRUAlgoCacheImpl(int capacity) {
 		super(capacity);
 		ramMemory = new PriorityQueue<>();
 		// TODO Auto-generated constructor stub

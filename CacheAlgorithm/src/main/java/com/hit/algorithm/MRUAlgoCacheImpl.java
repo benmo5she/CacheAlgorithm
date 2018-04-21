@@ -9,7 +9,7 @@ public class MRUAlgoCacheImpl<K, V> extends AbstractAlgoCache<K, V> {
 	Stack<K> ramMemory;
 	HashMap<K, V> diskMemory = new HashMap<K, V>();
 
-	MRUAlgoCacheImpl(int capacity) {
+	public MRUAlgoCacheImpl(int capacity) {
 		super(capacity);
 		// Use Stack for this implementation as we need the most recently used value and
 		// we can easily access it(pop)

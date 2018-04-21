@@ -11,7 +11,7 @@ public class RandomAlgoCacheImpl<K, V> extends AbstractAlgoCache<K, V> {
 	ArrayList<K> ramMemory;
 	HashMap<K, V> diskMemory = new HashMap<K, V>();
 
-	RandomAlgoCacheImpl(int capacity) {
+	public RandomAlgoCacheImpl(int capacity) {
 		super(capacity);
 		ramMemory = new ArrayList<K>();
 	}

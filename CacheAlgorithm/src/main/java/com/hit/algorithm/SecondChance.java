@@ -37,7 +37,7 @@ public class SecondChance<K, V> extends AbstractAlgoCache<K, V> {
 	PriorityQueue<KeyValuePair<K, Boolean>> ramMemory;
 	HashMap<K, V> diskMemory;
 
-	SecondChance(int capacity) {
+	public SecondChance(int capacity) {
 		super(capacity);
 		diskMemory = new HashMap<>();
 		ramMemory = new PriorityQueue<>();

@@ -16,7 +16,7 @@ public class CacheUnit<T> {
 		this.algo = algo;
 	}
 
-	public DataModel<T>[] getDataModels(java.lang.Long[] ids)
+	public DataModel<T>[] getDataModels(Long[] ids)
 			throws java.lang.ClassNotFoundException, java.io.IOException {
 		 ArrayList<DataModel<T>> resultPages = new ArrayList<DataModel<T>>();
 		for(Long DMId : ids)
