@@ -26,6 +26,7 @@ public class CacheUnit<T> {
 			if(foundPage == null)
 			{				
 				foundPage = dao.find(DMId);
+				//If the page was found in HDD add to ram				
 				if(foundPage != null)
 				{
 					algo.putElement(DMId, foundPage);
