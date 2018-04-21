@@ -5,8 +5,6 @@ import java.util.*;
 public class SecondChance<K, V> extends AbstractAlgoCache<K, V> {
 
 	/// Create this class to store the bit status of each of our keys in the memory
-	/// without the need to create separate
-	// Container or access to a the disk
 	// The ram will be a container which contain KeyValuePair<K,Boolean> elements
 	// When O(K) serves as the index, and the P(Boolean) serves as the bit value of
 	/// said node
@@ -33,13 +31,13 @@ public class SecondChance<K, V> extends AbstractAlgoCache<K, V> {
 
 	// As second chance algorithm uses FIFO,we should use a queue to store our
 	// values(using KeyValuePair as described above)
-	// Use hashmap to store the disk values for quick access to values
+	// Use hashmap to store the content values for quick access to values
 	PriorityQueue<KeyValuePair<K, Boolean>> ramMemory;
-	HashMap<K, V> diskMemory;
+	HashMap<K, V> valuesRepository;
 
 	public SecondChance(int capacity) {
 		super(capacity);
-		diskMemory = new HashMap<>();
+		valuesRepository = new HashMap<>();
 		ramMemory = new PriorityQueue<>();
 	}
 
@@ -53,7 +51,7 @@ public class SecondChance<K, V> extends AbstractAlgoCache<K, V> {
 			// break the loop as theres no need to continue
 			if (foundKey.getIndex().equals(key)) { //
 				foundKey.setValue(true);
-				resultObj = diskMemory.get(foundKey);
+				resultObj = valuesRepository.get(foundKey);
 				break;
 			}
 		}
@@ -78,9 +76,9 @@ public class SecondChance<K, V> extends AbstractAlgoCache<K, V> {
 				head = ramMemory.poll();
 			}
 		}
-		// Insert the new value to be inserted both to the ram and the disk
+		// Insert the new value to o the ram
 		ramMemory.add(createNewRamNode(key));
-		diskMemory.put(key, value);
+		valuesRepository.put(key, value);
 		return value;
 	}
 
@@ -98,7 +96,7 @@ public class SecondChance<K, V> extends AbstractAlgoCache<K, V> {
 		for (KeyValuePair<K, Boolean> foundKey : ramMemory) {
 			if (foundKey.getIndex().equals(key)) {
 				ramMemory.remove(foundKey);
-				diskMemory.remove(key);
+				valuesRepository.remove(key);
 				break;
 			}
 		}
