@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.Stack;
 
 public class MRUAlgoCacheImpl<K, V> extends AbstractAlgoCache<K, V> {
-	/// As disk memory is yet to be described, we will be storing our values in map
-	/// to represent the disk which uses the indexes of our ram memory.
 	Stack<K> ramMemory;
-	HashMap<K, V> diskMemory = new HashMap<K, V>();
+	HashMap<K, V> valuesRepository = new HashMap<K, V>();
 
 	public MRUAlgoCacheImpl(int capacity) {
 		super(capacity);
@@ -26,7 +24,7 @@ public class MRUAlgoCacheImpl<K, V> extends AbstractAlgoCache<K, V> {
 		boolean result = ramMemory.remove(key);
 		if (result) {
 			ramMemory.push(key);
-			resultObject = diskMemory.get(key);
+			resultObject = valuesRepository.get(key);
 		}
 		return resultObject;
 	}
@@ -36,12 +34,12 @@ public class MRUAlgoCacheImpl<K, V> extends AbstractAlgoCache<K, V> {
 		// If at capacity we need to dispose of one of the pages, get rid of the one
 		// that is at the head of the stack
 		// Since it was the most recently used,afterwards we have space for the new
-		// value, push it in to the stack and insert to the disk memory with the index.
+		// value, push it in to the stack and insert to the content repository with the index.
 		if (ramMemory.size() == _capacity)
 			ramMemory.pop();
 		ramMemory.push(key);
-		diskMemory.put(key, value);
-		return diskMemory.get(key);
+		valuesRepository.put(key, value);
+		return valuesRepository.get(key);
 	}
 
 	@Override
@@ -49,7 +47,7 @@ public class MRUAlgoCacheImpl<K, V> extends AbstractAlgoCache<K, V> {
 		// Use the implemented remove method to find and remove(if exists) the item in
 		// question.
 		ramMemory.remove(key);
-		diskMemory.remove(key);
+		valuesRepository.remove(key);
 	}
 
 }

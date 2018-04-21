@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 
 import com.hit.dm.DataModel;
@@ -24,6 +23,8 @@ public class DaoFileImpl<T> implements IDao<Long, DataModel<T>> {
 	public void delete(DataModel<T> entity) {
 		FileInputStream streamIn = null;
 		ObjectInputStream objectinputstream = null;
+		ObjectOutputStream oos = null;
+		FileOutputStream os = null;
 		try {
 			File pagesStorage = new File(filePath);
 			// If file does not exist it will create it,otherwise will just use the existing
@@ -33,26 +34,39 @@ public class DaoFileImpl<T> implements IDao<Long, DataModel<T>> {
 			objectinputstream = new ObjectInputStream(streamIn);
 			HashMap<Long, DataModel<T>> foundPages = (HashMap<Long, DataModel<T>>) objectinputstream.readObject();
 			foundPages.remove(entity.getDataModelId());
-			FileOutputStream os = new FileOutputStream(pagesStorage, false);
-            ObjectOutputStream oos = new ObjectOutputStream(os);
-            oos.writeObject(foundPages);
+			os = new FileOutputStream(pagesStorage, false);
+			oos = new ObjectOutputStream(os);
+			oos.writeObject(foundPages);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if (streamIn != null) {
-				try {
+			try {
+				if (streamIn != null) {
 					streamIn.close();
-				} catch (IOException e) {
-					e.printStackTrace();
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-
-			if (objectinputstream != null) {
-				try {
+			try {
+				if (objectinputstream != null) {
 					objectinputstream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (os != null) {
+					os.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (oos != null) {
+					os.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 
@@ -93,11 +107,13 @@ public class DaoFileImpl<T> implements IDao<Long, DataModel<T>> {
 
 	@Override
 	public void save(DataModel<T> t) {
+		FileOutputStream os = null;
+		ObjectOutputStream oos = null;
 		try {
-/*			if (find(t.getDataModelId()) != null) {
-				// If the page already exists we do not need to save again
-				return;
-			}*/
+			/*
+			 * if (find(t.getDataModelId()) != null) { // If the page already exists we do
+			 * not need to save again return; }
+			 */
 			// String
 			File pagesStorage = new File(filePath);
 			// If file does not exist it will create it,otherwise will just use the existing
@@ -107,29 +123,24 @@ public class DaoFileImpl<T> implements IDao<Long, DataModel<T>> {
 			HashMap<Long, DataModel<T>> map = null;
 			FileInputStream fis = new FileInputStream(pagesStorage);
 			ObjectInputStream ois = null;
-			try
-			{
+			try {
 				ois = new ObjectInputStream(fis);
 				map = (HashMap) ois.readObject();
-			}
-			catch(EOFException ex)
-			{
-				//If the file is empty create new has map
+			} catch (EOFException ex) {
+				// If the file is empty create new hash map
 				map = new HashMap<>();
 			}
-			if(ois != null)
-			{
-				ois.close();	
+			if (ois != null) {
+				ois.close();
 			}
-			if(fis != null)
-			{
+			if (fis != null) {
 				fis.close();
 			}
-			
+
 			map.put(t.getDataModelId(), t);
-			FileOutputStream  os = new FileOutputStream(pagesStorage, false);
-            ObjectOutputStream oos = new ObjectOutputStream(os);
-            oos.writeObject(map);
+			os = new FileOutputStream(pagesStorage, false);
+			oos = new ObjectOutputStream(os);
+			oos.writeObject(map);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -139,8 +150,23 @@ public class DaoFileImpl<T> implements IDao<Long, DataModel<T>> {
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}	finally {
+			try {
+				if (os != null) {
+					os.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			try {
+				if (oos != null) {
+					os.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-
+		
 	}
 
 }

@@ -9,7 +9,7 @@ public class RandomAlgoCacheImpl<K, V> extends AbstractAlgoCache<K, V> {
 	// implementation,we should use a ArrayList for easier access to our nodes by
 	// index.
 	ArrayList<K> ramMemory;
-	HashMap<K, V> diskMemory = new HashMap<K, V>();
+	HashMap<K, V> valuesRepository = new HashMap<K, V>();
 
 	public RandomAlgoCacheImpl(int capacity) {
 		super(capacity);
@@ -18,15 +18,14 @@ public class RandomAlgoCacheImpl<K, V> extends AbstractAlgoCache<K, V> {
 
 	@Override
 	public V getElement(K key) {
-		return diskMemory.get(key);
+		return valuesRepository.get(key);
 	}
 
 	@Override
 	public V putElement(K key, V value) {
 		/// If the array is full, activate the algorithm
 		// as the algorithm dictates, we should choose a node at random and remove it.
-		// Get a random number in the appropriate range,and remove it from our disk and
-		/// ram.
+		// Get a random number in the appropriate range,and remove it from our content repository and ram.
 		// Finally,add the new node
 		if (ramMemory.size() == _capacity) {
 			Random ran = new Random();
@@ -34,16 +33,16 @@ public class RandomAlgoCacheImpl<K, V> extends AbstractAlgoCache<K, V> {
 			removeElement(ramMemory.get(randomNumber));
 		}
 		ramMemory.add(key);
-		diskMemory.put(key, value);
+		valuesRepository.put(key, value);
 		return value;
 	}
 
 	@Override
 	public void removeElement(K key) {
-		// Use the collection remove method to remove the node(if exists) from the disk
+		// Use the collection remove method to remove the node(if exists) from the content repository
 		// and the ram.
 		ramMemory.remove(key);
-		diskMemory.remove(key);
+		valuesRepository.remove(key);
 	}
 
 }

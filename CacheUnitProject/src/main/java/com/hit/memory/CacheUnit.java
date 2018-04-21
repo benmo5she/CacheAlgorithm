@@ -15,16 +15,21 @@ public class CacheUnit<T> {
 		this.dao = dao;
 		this.algo = algo;
 	}
-
+	
 	public DataModel<T>[] getDataModels(Long[] ids)
 			throws java.lang.ClassNotFoundException, java.io.IOException {
 		 ArrayList<DataModel<T>> resultPages = new ArrayList<DataModel<T>>();
 		for(Long DMId : ids)
 		{
 			DataModel<T> foundPage = algo.getElement(DMId);
+			//Is the page in the ram? if not we need to check the HDD
 			if(foundPage == null)
-			{
+			{				
 				foundPage = dao.find(DMId);
+				if(foundPage != null)
+				{
+					algo.putElement(DMId, foundPage);
+				}
 			}
 			//Is the page missing from the cache? If so we need to find the page in HDD(dao)
 			//And add it to the cache
@@ -33,9 +38,11 @@ public class CacheUnit<T> {
 				//Seems this id was not found in the HDD as well, carry on to the next id
 				continue;
 			}
+			
 			resultPages.add(foundPage);
 		}		
-		DataModel<T>[] result = (DataModel<T>[])new Object[resultPages.size()];
-		return resultPages.toArray(result);
+		@SuppressWarnings("unchecked")
+		DataModel<T>[] arr = new DataModel[resultPages.size()];
+		return resultPages.toArray(arr);
 	}
 }
