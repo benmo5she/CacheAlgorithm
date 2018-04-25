@@ -34,7 +34,8 @@ public class MRUAlgoCacheImpl<K, V> extends AbstractAlgoCache<K, V> {
 		// If at capacity we need to dispose of one of the pages, get rid of the one
 		// that is at the head of the stack
 		// Since it was the most recently used,afterwards we have space for the new
-		// value, push it in to the stack and insert to the content repository with the index.
+		// value, push it in to the stack and insert to the content repository with the
+		// index.
 		if (ramMemory.size() == _capacity)
 			ramMemory.pop();
 		ramMemory.push(key);

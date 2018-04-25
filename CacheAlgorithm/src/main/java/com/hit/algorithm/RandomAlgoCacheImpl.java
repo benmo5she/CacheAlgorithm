@@ -25,7 +25,8 @@ public class RandomAlgoCacheImpl<K, V> extends AbstractAlgoCache<K, V> {
 	public V putElement(K key, V value) {
 		/// If the array is full, activate the algorithm
 		// as the algorithm dictates, we should choose a node at random and remove it.
-		// Get a random number in the appropriate range,and remove it from our content repository and ram.
+		// Get a random number in the appropriate range,and remove it from our content
+		/// repository and ram.
 		// Finally,add the new node
 		if (ramMemory.size() == _capacity) {
 			Random ran = new Random();
@@ -39,7 +40,8 @@ public class RandomAlgoCacheImpl<K, V> extends AbstractAlgoCache<K, V> {
 
 	@Override
 	public void removeElement(K key) {
-		// Use the collection remove method to remove the node(if exists) from the content repository
+		// Use the collection remove method to remove the node(if exists) from the
+		// content repository
 		// and the ram.
 		ramMemory.remove(key);
 		valuesRepository.remove(key);

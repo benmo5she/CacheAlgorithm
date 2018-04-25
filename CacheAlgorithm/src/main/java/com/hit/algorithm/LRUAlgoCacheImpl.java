@@ -22,10 +22,9 @@ public class LRUAlgoCacheImpl<K, V> extends AbstractAlgoCache<K, V> {
 		// since we are accessing a node(if exists) we will need to change its order as
 		// it was used right now,so it should go to the back of the queue.
 		// to achieve that we will need to find said node and remove it,and add it back.
-		if(ramMemory.remove(key))
-		{
+		if (ramMemory.remove(key)) {
 			ramMemory.add(key);
-		}		
+		}
 		return valuesRepository.get(key);
 	}
 

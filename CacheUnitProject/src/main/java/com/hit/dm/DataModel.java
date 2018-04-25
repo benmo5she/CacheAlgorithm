@@ -25,19 +25,19 @@ public class DataModel<T> implements java.io.Serializable {
 		dataModelId = id;
 		this.content = content;
 	}
+
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		return super.hashCode();
 	}
+
 	@Override
-	public boolean equals(Object obj)
-	{
+	public boolean equals(Object obj) {
 		return super.equals(obj);
 	}
+
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return super.toString();
 	}
 }
