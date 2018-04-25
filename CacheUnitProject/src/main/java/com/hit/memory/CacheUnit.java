@@ -26,10 +26,7 @@ public class CacheUnit<T> {
 			if(foundPage == null)
 			{				
 				foundPage = dao.find(DMId);
-<<<<<<< HEAD
 				//If the page was found in HDD add to ram				
-=======
->>>>>>> branch 'master' of https://github.com/benmo5she/CacheAlgorithm
 				if(foundPage != null)
 				{
 					algo.putElement(DMId, foundPage);
