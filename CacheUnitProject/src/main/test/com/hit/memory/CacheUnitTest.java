@@ -1,5 +1,7 @@
 package com.hit.memory;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
@@ -67,8 +69,8 @@ public class CacheUnitTest {
 		try {
 			Long originalId = initItem.getDataModelId();
 			resultArray = testCU.getDataModels(new Long[] { originalId, originalId + 1, originalId + 2 });
-			Assert.assertEquals((Integer) 2, (Integer) resultArray[0].getContent());
-			Assert.assertEquals((Integer) 1, (Integer) resultArray.length);
+			Assert.assertEquals(1, resultArray.length);
+			Assert.assertEquals((Integer) initItem.getContent(), (Integer) resultArray[0].getContent());
 		} catch (Exception e) {
 			Assert.fail(e.getMessage());
 		}
