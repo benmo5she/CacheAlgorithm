@@ -30,8 +30,9 @@ public class Server implements java.util.Observer {
 		case "stop":
 			if (serverAlive) {
 				currentCLI.write("Shutdown server");
-				try {
+				try {					
 					mysocket.close();
+					serverAlive = false;
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
