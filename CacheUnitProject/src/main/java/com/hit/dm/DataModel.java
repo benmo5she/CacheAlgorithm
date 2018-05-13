@@ -1,5 +1,8 @@
 package com.hit.dm;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class DataModel<T> implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private Long dataModelId;
@@ -38,6 +41,8 @@ public class DataModel<T> implements java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return super.toString();
+		GsonBuilder builder = new GsonBuilder();
+		Gson gson = builder.create();
+		return gson.toJson(this);
 	}
 }

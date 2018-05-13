@@ -1,9 +1,7 @@
 package com.hit.dao;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,8 +12,9 @@ import com.hit.dm.DataModel;
 
 public class DaoFileImpl<T> implements IDao<Long, DataModel<T>> {
 	private String filePath;
+	private HashMap<Long, DataModel<T>> memoryCache = null;
 
-	public void saveToFile(HashMap<Long, DataModel<T>> content) throws IOException {
+	public void saveToFile() {
 		FileOutputStream os = null;
 		ObjectOutputStream oos = null;
 		try {
@@ -25,8 +24,12 @@ public class DaoFileImpl<T> implements IDao<Long, DataModel<T>> {
 			pagesStorage.createNewFile();
 			os = new FileOutputStream(pagesStorage, false);
 			oos = new ObjectOutputStream(os);
-			oos.writeObject(content);
+			oos.writeObject(memoryCache);
 			oos.flush();
+			
+		} catch (IOException e) {
+			// If file not found print the exception and dont do anything.
+			e.printStackTrace();
 		} finally {
 			try {
 				if (os != null) {
@@ -45,18 +48,17 @@ public class DaoFileImpl<T> implements IDao<Long, DataModel<T>> {
 		}
 	}
 
-	private HashMap<Long, DataModel<T>> readFile() throws ClassNotFoundException, IOException {
-		HashMap<Long, DataModel<T>> result = null;
+	@SuppressWarnings("unchecked")
+	private void readFileToCache() {
 		FileInputStream streamIn = null;
 		ObjectInputStream objectinputstream = null;
 		try {
 			// Open and read the file into a map, and return(get) the item by the id.
 			streamIn = new FileInputStream(filePath);
 			objectinputstream = new ObjectInputStream(streamIn);
-			result = (HashMap<Long, DataModel<T>>) objectinputstream.readObject();
-		} catch (EOFException ex) {
+			memoryCache = (HashMap<Long, DataModel<T>>) objectinputstream.readObject();
 			// If the file is empty no need to read it.
-			return null;
+		} catch (Exception ex) {
 			// Begin closing the streams if necessary
 		} finally {
 			if (streamIn != null) {
@@ -75,11 +77,11 @@ public class DaoFileImpl<T> implements IDao<Long, DataModel<T>> {
 				}
 			}
 		}
-		return result;
 	}
 
 	public DaoFileImpl(java.lang.String filePath) {
 		this.filePath = filePath;
+		readFileToCache();
 	}
 
 	// This method provides a service which enables to remove items from the hard
@@ -87,18 +89,12 @@ public class DaoFileImpl<T> implements IDao<Long, DataModel<T>> {
 	// That is Managed by the DAO
 	@Override
 	public void delete(DataModel<T> entity) {
-		HashMap<Long, DataModel<T>> foundPages = null;
-		try {
-			foundPages = readFile();
-			DataModel<T> removedPage = foundPages.remove(entity.getDataModelId());
-			// It is only necessary to write to the file if the item was found and removed,
-			// Otherwise do not need to write to the file
-			if (removedPage != null) {
-				saveToFile(foundPages);
-			}
-		} catch (ClassNotFoundException | IOException e) {
-			e.printStackTrace();
+		if(memoryCache != null)
+		{
+			memoryCache.remove(entity.getDataModelId());
+			saveToFile();			
 		}
+
 	}
 
 	// This method will let us find in our HDD item by it's id, if found it will
@@ -106,14 +102,8 @@ public class DaoFileImpl<T> implements IDao<Long, DataModel<T>> {
 	@Override
 	public DataModel<T> find(Long id) {
 		DataModel<T> resultPage = null;
-		HashMap<Long, DataModel<T>> foundPages;
-		try {
-			foundPages = readFile();
-			if (foundPages != null) {
-				resultPage = foundPages.get(id);
-			}
-		} catch (ClassNotFoundException | IOException e) {
-			e.printStackTrace();
+		if (memoryCache != null) {
+			resultPage = memoryCache.get(id);
 		}
 		return resultPage;
 
@@ -123,27 +113,17 @@ public class DaoFileImpl<T> implements IDao<Long, DataModel<T>> {
 	// Stored in the file configured by the path sent to the class.
 	@Override
 	public void save(DataModel<T> t) {
-
-		HashMap<Long, DataModel<T>> fileContent;
-		try {
-			fileContent = readFile();
-			if(fileContent == null)
-			{
-				fileContent = new HashMap<>();
-			}
-			if (fileContent != null) {
-				DataModel<T> foundPage = fileContent.get(t.getDataModelId());
-				if (foundPage == null || foundPage.getContent() != t.getContent()) {
-					fileContent.put(t.getDataModelId(), t);
-					saveToFile(fileContent);
-				}
-			}
-			// Check if the data currently in file(id and content), if so avoid unnecessary
-			// writing to file,
-			// otherwise continue writing to file
-		} catch (ClassNotFoundException | IOException e) {
-			e.printStackTrace();
+		if (memoryCache == null) {
+			memoryCache = new HashMap<>();
 		}
+		DataModel<T> foundPage = memoryCache.get(t.getDataModelId());
+		if (foundPage == null || foundPage.getContent() != t.getContent()) {
+			memoryCache.put(t.getDataModelId(), t);
+			saveToFile();
+		}
+		// Check if the data currently in file(id and content), if so avoid unnecessary
+		// writing to file,
+		// otherwise continue writing to file
 	}
 
 }

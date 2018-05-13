@@ -1,5 +1,24 @@
 package com.hit.services;
+import com.hit.dm.DataModel;
 
-public class CacheUnitController {
-
+public class CacheUnitController<T> {
+	private CacheUnitService<T> cacheService;
+	public CacheUnitController()
+	{
+		cacheService = new CacheUnitService<>();
+	}
+	public boolean update(DataModel<T>[] dataModels)
+	{
+		return cacheService.update(dataModels);
+	}
+	
+	public boolean delete(DataModel<T>[] dataModels)
+	{
+		return cacheService.delete(dataModels);
+	}
+	
+	public DataModel<T>[] get(DataModel<T>[] dataModels)
+	{
+		return cacheService.get(dataModels);
+	}
 }

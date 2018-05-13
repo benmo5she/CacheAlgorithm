@@ -29,10 +29,9 @@ public class CacheUnit<T> {
 				}
 			}
 			// Is the page missing from the cache? If so we need to find the page in
-			// HDD(dao)
-			// And add it to the cache
+			// HDD(dao) And add it to the cache.
 			if (foundPage == null) {
-				// Seems this id was not found in the HDD as well, carry on to the next id
+				// Seems this id was not found in the HDD as well, carry on to the next id.
 				continue;
 			}
 
