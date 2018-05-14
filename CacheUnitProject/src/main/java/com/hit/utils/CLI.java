@@ -26,21 +26,25 @@ public class CLI extends java.util.Observable implements java.lang.Runnable {
 	public void run() {
 		while(true)
 		{
+			//Wait for user's input.
 			command = reader.nextLine();
+			//If supported command let the registered servers know and act accordingly.
 			if(command.equals("start") || command.equals("stop"))
 			{
 		        setChanged();
 		        notifyObservers();
 			}
+			//Let the user know the command is invalid.
 			else
 			{
-				write("Not a valid command.");
+				write("Not a valid command,system only supports: start or stop.");
 			}
 		}
 	}
 
 	public void write(String string) {
 		writer.println(string);
+		writer.flush();
 	}
 
 }

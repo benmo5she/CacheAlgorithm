@@ -26,7 +26,7 @@ public class DaoFileImpl<T> implements IDao<Long, DataModel<T>> {
 			oos = new ObjectOutputStream(os);
 			oos.writeObject(memoryCache);
 			oos.flush();
-			
+
 		} catch (IOException e) {
 			// If file not found print the exception and dont do anything.
 			e.printStackTrace();
@@ -89,10 +89,9 @@ public class DaoFileImpl<T> implements IDao<Long, DataModel<T>> {
 	// That is Managed by the DAO
 	@Override
 	public void delete(DataModel<T> entity) {
-		if(memoryCache != null)
-		{
+		if (memoryCache != null) {
 			memoryCache.remove(entity.getDataModelId());
-			saveToFile();			
+			saveToFile();
 		}
 
 	}

@@ -5,7 +5,8 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
+//This class is used as data container for the 
+//information sent between the client and the service.
 public class Request<T> implements Serializable {
 
 	private static final long serialVersionUID = 1L;

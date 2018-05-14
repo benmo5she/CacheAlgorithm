@@ -1,6 +1,7 @@
 package com.hit.services;
 import com.hit.dm.DataModel;
-
+//This class is used to operate the CacheService unit providing simple methods for 
+//access to information.
 public class CacheUnitController<T> {
 	private CacheUnitService<T> cacheService;
 	public CacheUnitController()

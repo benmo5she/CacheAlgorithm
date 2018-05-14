@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 
 import com.hit.services.CacheUnitController;
 import com.hit.utils.CLI;
-
+//This class as the name implies represents the server that will execute the application(cacheUnit)
 public class Server implements java.util.Observer {
 	private boolean serverAlive;
 	ServerSocket mysocket;
@@ -17,8 +17,11 @@ public class Server implements java.util.Observer {
 
 	@Override
 	public void update(Observable o, Object arg) {
+		//We expect this method to execute when the observable(one of the registered CLIs)
+		//notifies there's been a change(user input) in the CLI state.
 		CLI currentCLI = (CLI) o;
 		switch (currentCLI.getCommand()) {
+		//User is trying to start the server, before taking action check it's current state.
 		case "start":
 			if (serverAlive) {
 				currentCLI.write("Server is allready running");
@@ -27,6 +30,8 @@ public class Server implements java.util.Observer {
 				start();
 			}
 			break;
+			//User has chosen to stop the server, 
+			//before taking action check the server current state.
 		case "stop":
 			if (serverAlive) {
 				currentCLI.write("Shutdown server");
@@ -43,7 +48,7 @@ public class Server implements java.util.Observer {
 			break;
 		}
 	}
-
+//Start the server and listen to requests, when request accepted create new socket accordingly.
 	public void start() {
 		try {
 			mysocket = new ServerSocket(5555);

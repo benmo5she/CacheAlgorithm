@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import com.hit.algorithm.IAlgoCache;
 import com.hit.dao.IDao;
 import com.hit.dm.DataModel;
-
+//This class serves as intermediary for the actual data(both the RAM and the HDD)
+//It provides basic API which requires collection of DataModels.
+//It will return a collection of references of all the DataModels found either in the RAM or the HDD.
 public class CacheUnit<T> {
 	private IDao<Long, DataModel<T>> dao;
 	private IAlgoCache<Long, DataModel<T>> algo;

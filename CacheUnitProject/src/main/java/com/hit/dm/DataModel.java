@@ -2,7 +2,7 @@ package com.hit.dm;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
+///This class serves as data container for the user info in the application.
 public class DataModel<T> implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private Long dataModelId;
