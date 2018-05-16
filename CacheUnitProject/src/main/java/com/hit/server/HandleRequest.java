@@ -4,8 +4,11 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.Socket;
+import java.time.LocalDateTime;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -28,13 +31,15 @@ public class HandleRequest<T> implements java.lang.Runnable {
 	public void run() {
 		BufferedReader reader = null;
 		DataOutputStream writer = null;
-		try {			
+		try {
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			writer = new DataOutputStream(socket.getOutputStream());
-			Type ref = new TypeToken<Request<DataModel<T>[]>>() {}.getType();
-			//Start reading the input accepted from the socket input stream.
+			Type ref = new TypeToken<Request<DataModel<T>[]>>() {
+			}.getType();
+			// Start reading the input accepted from the socket input stream.
 			String req = reader.readLine();
-			//Try parsing said input to proper Request object
+			// Try parsing said input to proper Request object
+			logMessage("Accepted message from client:\n" + req);
 			Request<DataModel<T>[]> userRequest = new Gson().fromJson(req, ref);
 			if (userRequest == null || userRequest.getHeaders() == null) {
 				writer.writeBytes("JSON is invalid");
@@ -42,44 +47,42 @@ public class HandleRequest<T> implements java.lang.Runnable {
 			}
 			String action = userRequest.getHeaders().get("action");
 			boolean actionCompleted = false;
-			//Decide which action should the controller take.
+			// Decide which action should the controller take.
 			switch (action) {
 			case "GET":
 				GsonBuilder builder = new GsonBuilder();
 				Gson gson = builder.create();
 				String responseBody = gson.toJson(controller.get(userRequest.getBody()));
-				//Since the format of the response is identical to the request, 
-				//we can reuse the Request object to represent the response returned
-				//from the controller
+				// Since the format of the response is identical to the request,
+				// we can reuse the Request object to represent the response returned
+				// from the controller
 				Request<String> response = new Request<String>(userRequest.getHeaders(), responseBody);
-				writer.writeBytes(response.toString());
+				writeToStreamAndLog(writer, response.toString());
 				break;
 			case "UPDATE":
 				actionCompleted = controller.update(userRequest.getBody());
-				//Return to the output stream the response from the controller as string(true/false)
-				writer.writeBytes(String.valueOf(actionCompleted));
+				// Return to the output stream the response from the controller as
+				// string(true/false)
+				writeToStreamAndLog(writer, String.valueOf(actionCompleted));
 				break;
 			case "DELETE":
 				actionCompleted = controller.delete(userRequest.getBody());
-				writer.writeBytes(String.valueOf(actionCompleted));
+				writeToStreamAndLog(writer, String.valueOf(actionCompleted));
 				break;
-				//If we reached this point, it means the user has sent unsupported command in the header.
-				//Return appropriate message to the client providing current supported actions.
+			// If we reached this point, it means the user has sent unsupported command in
+			// the header.
+			// Return appropriate message to the client providing current supported actions.
 			default:
 				String error = "Invalid command accepted: " + action
 						+ "\nCan only accept: GET,UPDATE,DELETE for this paramter.";
-				writer.writeBytes(error);
+				System.out.println("Message to client:\n" + error);
+				writeToStreamAndLog(writer, error);
 			}
 		} catch (IOException | JsonSyntaxException e) {
 			if (writer != null) {
-				try {
-					writer.writeBytes(e.getMessage());
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				writeToStreamAndLog(writer, e.getMessage());
 			}
-		//Start cleaning up
+			// Start cleaning up
 		} finally {
 			if (reader != null) {
 				try {
@@ -108,5 +111,19 @@ public class HandleRequest<T> implements java.lang.Runnable {
 				}
 			}
 		}
+	}
+
+	private void writeToStreamAndLog(DataOutputStream outputStream, String message) {
+		logMessage("Message to client:\n" + message);
+		try {
+			outputStream.writeBytes(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void logMessage(String message)
+	{
+		System.out.println("[" + LocalDateTime.now() + "] " + message);
 	}
 }
