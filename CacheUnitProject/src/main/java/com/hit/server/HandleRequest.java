@@ -21,7 +21,8 @@ import com.hit.services.CacheUnitController;
 public class HandleRequest<T> implements java.lang.Runnable {
 	private CacheUnitController<T> controller;
 	private Socket socket;
-
+	BufferedReader reader = null;
+	DataOutputStream writer = null;
 	public HandleRequest(Socket s, CacheUnitController<T> controller) {
 		this.controller = controller;
 		this.socket = s;
@@ -29,8 +30,6 @@ public class HandleRequest<T> implements java.lang.Runnable {
 
 	@Override
 	public void run() {
-		BufferedReader reader = null;
-		DataOutputStream writer = null;
 		try {
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			writer = new DataOutputStream(socket.getOutputStream());
@@ -57,17 +56,17 @@ public class HandleRequest<T> implements java.lang.Runnable {
 				// we can reuse the Request object to represent the response returned
 				// from the controller
 				Request<String> response = new Request<String>(userRequest.getHeaders(), responseBody);
-				writeToStreamAndLog(writer, response.toString());
+				writeToStreamAndLog(response.toString());
 				break;
 			case "UPDATE":
 				actionCompleted = controller.update(userRequest.getBody());
 				// Return to the output stream the response from the controller as
 				// string(true/false)
-				writeToStreamAndLog(writer, String.valueOf(actionCompleted));
+				writeToStreamAndLog(String.valueOf(actionCompleted));
 				break;
 			case "DELETE":
 				actionCompleted = controller.delete(userRequest.getBody());
-				writeToStreamAndLog(writer, String.valueOf(actionCompleted));
+				writeToStreamAndLog(String.valueOf(actionCompleted));
 				break;
 			// If we reached this point, it means the user has sent unsupported command in
 			// the header.
@@ -76,11 +75,11 @@ public class HandleRequest<T> implements java.lang.Runnable {
 				String error = "Invalid command accepted: " + action
 						+ "\nCan only accept: GET,UPDATE,DELETE for this paramter.";
 				System.out.println("Message to client:\n" + error);
-				writeToStreamAndLog(writer, error);
+				writeToStreamAndLog(error);
 			}
 		} catch (IOException | JsonSyntaxException e) {
 			if (writer != null) {
-				writeToStreamAndLog(writer, e.getMessage());
+				writeToStreamAndLog(e.getMessage());
 			}
 			// Start cleaning up
 		} finally {
@@ -113,10 +112,10 @@ public class HandleRequest<T> implements java.lang.Runnable {
 		}
 	}
 
-	private void writeToStreamAndLog(DataOutputStream outputStream, String message) {
+	private void writeToStreamAndLog(String message) {
 		logMessage("Message to client:\n" + message);
 		try {
-			outputStream.writeBytes(message);
+			writer.writeBytes(message);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
